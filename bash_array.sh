@@ -7,4 +7,3 @@ NAME[3]="Ayan"
 NAME[4]="Daisy"
 echo "First Index: ${NAME[0]}"
 echo "Second Index: ${NAME[1]}"
-
