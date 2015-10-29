@@ -1,0 +1,27 @@
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+    config.vm.box = "rarguello/fedora-22"
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+    config.vm.network "forwarded_port", guest: 9090, host: 9090
+    config.vm.hostname = "cockpit-devel"
+
+    config.vm.provider "libvirt" do |libvirt, override|
+        libvirt.memory = 4096
+    end
+
+    config.vm.provision "shell", inline: <<-SHELL
+        set -eu
+
+        echo Secret123 | passwd --stdin root
+        getent passwd admin >/dev/null || useradd -u 1000 -c Administrator -G wheel admin
+        echo Secret123 | passwd --stdin admin
+        
+        dnf install -y nodejs npm
+        dnf install -y python-libguestfs qemu mock qemu-kvm rpm-build \
+             curl libvirt-client libvirt-python libvirt python-lxml \
+             krb5-workstation krb5-server selinux-policy-devel
+        npm install -g phantomjs
+
+    SHELL
+end
